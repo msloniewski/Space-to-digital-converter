@@ -2,7 +2,12 @@ QT += qml quick
 
 CONFIG += c++11
 
-SOURCES += main.cpp
+QT += bluetooth core widgets
+
+SOURCES += main.cpp \
+    btcontroller.cpp \
+    device.cpp \
+    service.cpp
 
 RESOURCES += qml.qrc
 
@@ -27,3 +32,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    btcontroller.h \
+    device.h \
+    service.h
+
+DISTFILES +=
+
+FORMS += \
+    device.ui \
+    service.ui
