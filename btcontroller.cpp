@@ -12,6 +12,7 @@ static const QLatin1String serviceUuid("e8e10f95-1a70-4b27-9ccf-02010264e9c8");
 
 BtController::BtController(): localDevice(new QBluetoothLocalDevice)
 {
+    /*
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent();
 
     connect(discoveryAgent, SIGNAL(deviceDiscovered(QBluetoothDeviceInfo)),
@@ -31,12 +32,23 @@ BtController::BtController(): localDevice(new QBluetoothLocalDevice)
     //TUTAJ LECIMY CHUJOWO NA SEKWENCJE
     discoveryAgent->start();
 
-
+*/
 
 }
 
 BtController::~BtController()
 {
+}
+
+void BtController::toggleOnOffLocalDev()
+{
+    if ( LocDevOnOff == true )
+    {
+        localDevice->powerOn();
+    } else
+    {
+        localDevice->setHostMode(QBluetoothLocalDevice::HostPoweredOff);
+    }
 }
 
 void BtController::scanFinished()
@@ -62,24 +74,46 @@ void BtController::addDevice(const QBluetoothDeviceInfo &info)
         qDebug()<< "Added device: " << label;
         QBluetoothLocalDevice::Pairing pairingStatus = localDevice->pairingStatus(info.address());
         if (pairingStatus == QBluetoothLocalDevice::Paired || pairingStatus == QBluetoothLocalDevice::AuthorizedPaired )
+        {
             qDebug()<<"And it's paired";
+        }
         else
+        {
             qDebug()<<"And it's not paired";
+        }
+    }
+
+}
+
+void BtController::slotRead()
+{
+    qDebug()<<"asd";
+    char buff[64];
+    for (int i; i< 64; i++)
+    {
+        buff[i]=0;
+    }
+qDebug()<<"czytam";
+    socket->read(buff,32);
+    for (int i=0; i< 1; i++)
+    {
+        qDebug()<<"a"<<buff[i];
     }
 
 }
 void BtController::hostModeStateChanged(QBluetoothLocalDevice::HostMode mode)
 {
     if (mode != QBluetoothLocalDevice::HostPoweredOff)
-        qDebug()<<"HostPoweredOff";
-    else
         qDebug()<<"HostPoweredOn";
+    else
+        qDebug()<<"HostPoweredOff";
 
     if (mode == QBluetoothLocalDevice::HostDiscoverable)
         qDebug()<<"HostDiscoverable";
     else
         qDebug()<<"HostUndiscoverable";
 
+    LocDevOnOff = !(mode == QBluetoothLocalDevice::HostPoweredOff);
     /*bool on = !(mode == QBluetoothLocalDevice::HostPoweredOff);
 
     ui->scan->setEnabled(on);

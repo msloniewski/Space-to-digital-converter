@@ -5,9 +5,7 @@ CONFIG += c++11
 QT += bluetooth core widgets
 
 SOURCES += main.cpp \
-    btcontroller.cpp \
-    device.cpp \
-    service.cpp
+    btcontroller.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,9 +32,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    btcontroller.h \
-    device.h \
-    service.h
+    btcontroller.h
 
 DISTFILES +=
 
