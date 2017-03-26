@@ -1,4 +1,4 @@
-QT += qml quick
+QT += qml quick charts
 
 CONFIG += c++11
 
@@ -34,8 +34,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     btcontroller.h
 
-DISTFILES +=
+DISTFILES += \
+    mainWindow.qml
 
-FORMS += \
-    device.ui \
-    service.ui
+FORMS +=

@@ -12,6 +12,32 @@ static const QLatin1String serviceUuid("e8e10f95-1a70-4b27-9ccf-02010264e9c8");
 
 BtController::BtController(): localDevice(new QBluetoothLocalDevice)
 {
+    QString localDeviceName;
+
+    if (localDevice->isValid()) {
+
+        // Turn Bluetooth on
+        localDevice->powerOn();
+
+        // Read local device name
+        localDeviceName = localDevice->name();
+
+        // Make it visible to others
+        localDevice->setHostMode(QBluetoothLocalDevice::HostDiscoverable);
+
+        // Get connected devices
+        QList<QBluetoothAddress> remotes;
+        remotes = localDevice->connectedDevices();
+
+        socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
+        qDebug() << "Create socket";
+        static const QLatin1String serviceUuid("00001101-0000-1000-8000-00805f9b34fb");
+        QBluetoothUuid uuid (serviceUuid);
+        socket->connectToService( QBluetoothAddress("98:D3:31:80:98:49"), uuid );
+        QObject::connect( socket, SIGNAL(readyRead()), this, SLOT(slotRead() ) );
+        qDebug() << "ConnectToService done";
+
+    }
     /*
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent();
 
@@ -40,6 +66,16 @@ BtController::~BtController()
 {
 }
 
+void BtController::addSeries(QtCharts::QLineSeries *a_series)
+{
+    this->series = a_series;
+}
+
+void BtController::addChart(QtCharts::QChart *a_chart)
+{
+    this->chart = a_chart;
+}
+/*
 void BtController::toggleOnOffLocalDev()
 {
     if ( LocDevOnOff == true )
@@ -84,23 +120,27 @@ void BtController::addDevice(const QBluetoothDeviceInfo &info)
     }
 
 }
-
+*/
 void BtController::slotRead()
 {
-    qDebug()<<"asd";
     char buff[64];
     for (int i; i< 64; i++)
     {
         buff[i]=0;
     }
-qDebug()<<"czytam";
-    socket->read(buff,32);
-    for (int i=0; i< 1; i++)
+    qDebug()<<"czytam";
+    int ilosc = socket->read(buff,32);
+    for (int i=0; i< ilosc; i++)
     {
         qDebug()<<"a"<<buff[i];
+        series->append(iloscdanych,(int)buff[i]);
+        iloscdanych++;
     }
-
+    chart->removeSeries(series);
+    chart->addSeries(series);
+    chart->createDefaultAxes();
 }
+/*
 void BtController::hostModeStateChanged(QBluetoothLocalDevice::HostMode mode)
 {
     if (mode != QBluetoothLocalDevice::HostPoweredOff)
@@ -114,8 +154,8 @@ void BtController::hostModeStateChanged(QBluetoothLocalDevice::HostMode mode)
         qDebug()<<"HostUndiscoverable";
 
     LocDevOnOff = !(mode == QBluetoothLocalDevice::HostPoweredOff);
-    /*bool on = !(mode == QBluetoothLocalDevice::HostPoweredOff);
+    //bool on = !(mode == QBluetoothLocalDevice::HostPoweredOff);
 
     ui->scan->setEnabled(on);
-    ui->discoverable->setEnabled(on);*/
-}
+    ui->discoverable->setEnabled(on);
+}*/

@@ -1,20 +1,47 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
-#include "device.h"
+
+
 #include "btcontroller.h"
 #include<QBluetoothDeviceDiscoveryAgent>
 #include <QThread>
 #include <QBluetoothSocket>
-
+#include <QLineSeries>
+#include <QMainWindow>
+#include <QChart>
+#include <QChartView>
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
+    //QQmlApplicationEngine engine;
+    //engine.load(QUrl(QStringLiteral("qrc:/mainWindow.qml")));
+    QtCharts::QLineSeries *series = new QtCharts::QLineSeries();
 
-    QBluetoothLocalDevice localDevice;
-    QString localDeviceName;
-    BtController ctrl;
-    if (localDevice.isValid()) {
+
+
+       QtCharts::QChart *chart = new QtCharts::QChart();
+       chart->legend()->hide();
+       chart->addSeries(series);
+       chart->createDefaultAxes();
+       chart->setTitle("Simple line chart example");
+
+       QtCharts::QChartView *chartView = new QtCharts::QChartView(chart);
+       chartView->setRenderHint(QPainter::Antialiasing);
+
+       QMainWindow window;
+       window.setCentralWidget(chartView);
+       window.resize(400, 300);
+       window.show();
+
+    //QBluetoothLocalDevice localDevice;
+    //QString localDeviceName;
+   BtController ctrl;
+   ctrl.addChart(chart);
+   ctrl.addSeries(series);
+
+   //ctrl.slotRead();
+    /*if (localDevice.isValid()) {
 
         // Turn Bluetooth on
         localDevice.powerOn();
@@ -37,7 +64,7 @@ int main(int argc, char *argv[])
         QObject::connect( ctrl.socket, SIGNAL(readyRead()), &ctrl, SLOT(slotRead() ) );
         qDebug() << "ConnectToService done";
 
-    }
+    }*/
 
 /*
     DeviceDiscoveryDialog d;
